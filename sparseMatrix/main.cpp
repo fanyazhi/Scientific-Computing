@@ -1,7 +1,9 @@
 #include "defs.h"
 using namespace std;
 
-int main()
-{
+int main(){
+	testUpper();
 	testList();
+	testCrsOperations();
+
 }
