@@ -53,3 +53,10 @@ void printA(double value[], int colInd[], int colIndSize, int rowPtr[], int rowP
 
 
 void testCrsOperations();
+
+
+
+
+void fullRowScale(double A[3][3], int i, int j, int c, double a);
+void fullSolve(double A[3][3], double x[], double b[], int r, int c);
+void WilkinsonTest();
