@@ -50,7 +50,7 @@ void arrSwap(double arr[], int arrSize, int i1, int i2, int j1, int j2){
 	list<double>::iterator j2It = templist.begin(); advance(j2It, j2-1);
 	list<double>::iterator firstPos = templist.begin(); advance(firstPos, i2);
 	list<double>::iterator secondPos = templist.begin(); advance(secondPos, j2);
-//	cout<<*i1It<<*i2It<<*j1It<<*j2It<<*firstPos<<*secondPos<<endl;
+	//cout<<*i1It<<*i2It<<*j1It<<*j2It<<*firstPos<<*secondPos<<endl;
 	if (j1It != firstPos) templist.splice(firstPos, templist, j1It, secondPos);
 //	for (auto v : templist)
 //	cout << v << "\n";
@@ -78,6 +78,49 @@ void arrSwapInt(int arr[], int arrSize, int i1, int i2, int j1, int j2){
 	listToArrInt(arr, templist);
 }
 
+/* Helper function: arrInsert
+ * insert value a to an array at position pos
+ */
+ void arrInsert(double *arr[], int&arrSize, int pos, double a){
+	 list<double> mylist;
+	 arrToList(*arr, arrSize, mylist);
+	 list<double>::iterator it = mylist.begin(); advance(it, pos);
+	 mylist.insert(it, a);
+	 arrSize++;
+	 *arr = new double[arrSize];
+	 listToArr(*arr, mylist);
+ }
+ void arrInsertInt(int *arr[], int&arrSize, int pos, int a){
+	 list<int> mylist;
+	 arrToListInt(*arr, arrSize, mylist);
+	 list<int>::iterator it = mylist.begin(); advance(it, pos);
+	 mylist.insert(it, a);
+	 arrSize++;
+	 *arr = new int[arrSize];
+	 listToArrInt(*arr, mylist);
+	 
+ }
+ /* Helper function: arrRemove
+ * remove element of an array at position pos
+ */
+void arrRemove(double *arr[], int&arrSize, int pos){
+	list<double> mylist;
+	arrToList(*arr, arrSize, mylist);
+	list<double>::iterator it = mylist.begin(); advance(it, pos);
+	mylist.erase(it);
+	arrSize--;
+	*arr = new double[arrSize];
+	listToArr(*arr, mylist);
+}
+void arrRemoveInt(int *arr[], int&arrSize, int pos){
+	list<int> mylist;
+	arrToListInt(*arr, arrSize, mylist);
+	list<int>::iterator it = mylist.begin(); advance(it, pos);
+	mylist.erase(it);
+	arrSize--;
+	*arr = new int[arrSize];
+	listToArrInt(*arr, mylist);
+}
 
 /* Helper function: compareArr
  * compare if all elements in first list and second list have less than e difference (double only)
