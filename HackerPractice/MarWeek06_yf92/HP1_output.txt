@@ -1,0 +1,14 @@
+x: 
+-0.37931
+-0.408347
+-0.116152
+-0.0562609
+-0.108892
+number of iterations: 28
+checking the evolution of the residual vector
+8.56979e-07
+2.24072e-06
+8.5698e-07
+6.76853e-07
+6.76855e-07
+residual vector norm: 2.72138e-06
