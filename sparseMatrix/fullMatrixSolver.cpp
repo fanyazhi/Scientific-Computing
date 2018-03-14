@@ -4,8 +4,7 @@ using namespace std;
 /*A full matrix direct solver was written to test the sparse matrix solver using the Wilkison Principle
  * This full matrix solver can only solve small and simple matrices
  */
- 
- void fullSolve(double A[3][3], double x[], double b[], int r, int c){
+ void fullSolve(double A[5][5], double x[], double b[], int r, int c){
 	 for (int ci = 0; ci<c-1; ci++){
 	 for (int p = ci; p<r-1; p++){
 	 for (int ri = p+1; ri<c; ri++){
@@ -32,21 +31,22 @@ using namespace std;
 	 }}}
 	 for (int i = 0; i<r; i++) x[i] = b[i]/A[i][i];
  }
- void fullRowScale(double A[3][3], int i, int j, int c, double a){
+ 
+ void fullRowScale(double A[5][5], int i, int j, int c, double a){
 	 for (int n = 0; n<c; n++){
 		 //cout<<"added"<<A[i][n]*a<<endl;
 		 A[j][n] += A[i][n]*a;
 	 }
  }
- void WilkinsonTest(){
-	const int r = 3; const int c = 3;
-	double A[r][c] = {{1,2,3},{4,5,6},{7,8,10}};
+ 
+ void testFullMatrixSolver(){
+	const int r = 5; const int c = 5;
+	double A[r][c] = {{-4,1,0,0,1},{4,-4,1,0,0},{0,1,-4,1,0},{0,0,1,-4,1},{1,0,0,1,-4}};
 	
-	double b[] = {1,2,3};
+	double b[] = {1,2,3,4,5};
 	double x[] = {0};
 	
 	fullSolve(A, x, b, r, c);
-	for (int i = 0; i<3; i++) cout<<x[i]<<" ";
-	
+	cout<<"Test FullMatrixSolver: no error"<<endl;
  }
 

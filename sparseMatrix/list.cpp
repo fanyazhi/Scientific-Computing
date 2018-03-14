@@ -1,6 +1,10 @@
 #include "defs.h"
 using namespace std;
 
+/* Note: Helper functions in list.cpp are in pairs:
+ * one version operates on double typed array, and another version operates on integer typed array
+ */
+ 
 /* Helper function: arrToList
  * converts an array to a linked list
  * double arr[]: array to be converted 

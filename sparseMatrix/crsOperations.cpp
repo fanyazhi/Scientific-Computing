@@ -71,8 +71,6 @@ double retrieve(double value[], int rowPtr[], int colInd[], int i, int j){
 	int pos = rowPtr[i];
 	bool found = 0;
 	for (int n = rowPtr[i]; n<rowPtr[i]+rowSize(rowPtr, i); n++){
-		//cout<<"n"<<n<<endl;
-		//cout<<"colInd[n]"<<colInd[pos+n]<<endl;
 		if (colInd[n] == j){
 			pos = n;
 			found = 1;
@@ -81,6 +79,49 @@ double retrieve(double value[], int rowPtr[], int colInd[], int i, int j){
 	if (found) return value[pos];
 	return 0.0;
 }
+
+ /* Helper function: deleteValue
+ * delete value[i][j], ith row and jth column
+ * also delete colInd[i][j], and change rowPtr accordingly
+ */
+void deleteValue(double *value[], int &valueSize, int rowPtr[], int rowPtrSize, int *colInd[], int &colIndSize, int i, int j){
+	int pos = rowPtr[i];
+	for (int n = rowPtr[i]; n<rowPtr[i]+rowSize(rowPtr, i); n++){
+		if ((*colInd)[n] == j){
+			pos = n;
+			arrRemove(value, valueSize, pos);
+			arrRemoveInt(colInd, colIndSize, pos);
+			for (int m = i+1; m<rowPtrSize; m++) rowPtr[m]--;
+		}
+	}
+}
+
+ /* Helper function: negative
+  * make value[i][j] = -1* value[i][j]
+ */
+void negative(double value[], int rowPtr[], int colInd[], int i, int j){
+	int pos = rowPtr[i];
+	for (int n = rowPtr[i]; n<rowPtr[i]+rowSize(rowPtr, i); n++){
+		if (colInd[n] == j){
+			pos = n;
+			value[pos] *= -1.0;
+		}
+	}
+}
+
+ /* Helper function: inverse
+  * make value[i][j] = value^-1[i][j]
+ */
+void inverse(double value[], int rowPtr[], int colInd[], int i, int j){
+	int pos = rowPtr[i];
+	for (int n = rowPtr[i]; n<rowPtr[i]+rowSize(rowPtr, i); n++){
+		if (colInd[n] == j){
+			pos = n;
+			value[pos] = 1/value[pos];
+		}
+	}
+}
+
  /* Helper function: rowSize
  * return the number of elements in row r
  * Note: index of the first row is 0
@@ -104,6 +145,7 @@ void printA(double value[], int colInd[], int colIndSize, int rowPtr[], int rowP
 }
 
 
+//tests for the various functions in crsOperations.cpp
 void testCrsOperations(){
 	int valueSize = 12;
 	int rowPtrSize = 6;
@@ -185,7 +227,4 @@ void testCrsOperations(){
 	&& compareArrInt(colInd, colIndSize, colTest5, sizeof(colTest5)/sizeof(colTest5[0]))
 	&& compareArrInt(rowPtr, rowPtrSize, rowTest5, sizeof(rowTest5)/sizeof(rowTest5[0]))?
 	cout << "Test rowScale case 3 with deletion: no error"<<endl:cout << "Test rowScale case 3 with deletion: error"<<endl;
-
-	//test retrieve
-
 }
