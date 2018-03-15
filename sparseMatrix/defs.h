@@ -8,6 +8,7 @@
 #include <list>
 #include <iostream>
 #include <iterator>
+#include <stdlib.h> 
 
 using namespace std;
 /*************************** Function Definitions ****************************/
@@ -67,7 +68,7 @@ void testFullMatrixSolver();
 
 
 /**
-functions in jacobi.cpp
+functions in jacobiOperations.cpp
 */
 void getD(double *Dvalue[], int &DvalueSize, int DrowPtr[], int DrowPtrSize, int *DcolInd[], int &DcolIndSize);
 void getL(double *Lvalue[], int &LvalueSize, int LrowPtr[], int LrowPtrSize, int *LcolInd[], int &LcolIndSize);
@@ -77,11 +78,11 @@ void LplusU(double *LUvalue[], int &LUvalueSize, int LUrowPtr[], int LUrowPtrSiz
 void iteration(double Dvalue[], double LUvalue[], int LUvalueSize, int LUrowPtr[], int LUrowPtrSize, int LUcolInd[], int LUcolIndSize, double DLUvalue[]);
 void product(double value[], int valueSize, int rowPtr[], int rowPtrSize, int colInd[], int colIndSize, double x[], double product[]);
 void add(double a[], double b[], int size, double c[]);
+void testJacobiOperations();
 
 
-void testJacobi();
 
-
+void jacobi(double value[], int valueSize, int rowPtr[], int rowPtrSize, int colInd[], int colIndSize);
 /**
 functions in modularTests
 */
