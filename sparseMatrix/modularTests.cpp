@@ -5,9 +5,9 @@ using namespace std;
  */
  
  void modularTests(){
-//	testUpper();
-//	testList();
-//	testCrsOperations();
-//	testFullMatrixSolver();
-//	testJacobi();
+	testNorms();
+	testList();
+	testCrsOperations();
+	testFullMatrixSolver();
+
  }

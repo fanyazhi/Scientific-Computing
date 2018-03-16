@@ -47,6 +47,5 @@ using namespace std;
 	double x[] = {0};
 	
 	fullSolve(A, x, b, r, c);
-	cout<<"Test FullMatrixSolver: no error"<<endl;
  }
 

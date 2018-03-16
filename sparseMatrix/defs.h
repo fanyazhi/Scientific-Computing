@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cfloat>
+#include <ctime>
 #include <fstream>
 #include <limits>
 #include <list>
@@ -63,7 +64,6 @@ functions in fullMatrixSolver.cpp
 */
 void fullRowScale(double A[5][5], int i, int j, int c, double a);
 void fullSolve(double A[5][5], double x[], double b[], int r, int c);
-
 void testFullMatrixSolver();
 
 
@@ -81,8 +81,11 @@ void add(double a[], double b[], int size, double c[]);
 void testJacobiOperations();
 
 
+/**
+functions in jacobi.cpp
+*/
+void jacobi(double value[], int valueSize, int rowPtr[], int rowPtrSize, int colInd[], int colIndSize, double b[], int bSize, double x[]);
 
-void jacobi(double value[], int valueSize, int rowPtr[], int rowPtrSize, int colInd[], int colIndSize);
 /**
 functions in modularTests
 */

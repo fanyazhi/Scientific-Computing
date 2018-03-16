@@ -85,12 +85,22 @@ double retrieve(double value[], int rowPtr[], int colInd[], int i, int j){
  * also delete colInd[i][j], and change rowPtr accordingly
  */
 void deleteValue(double *value[], int &valueSize, int rowPtr[], int rowPtrSize, int *colInd[], int &colIndSize, int i, int j){
-	int pos = rowPtr[i];
+	
+	list<double> myValueList;
+	arrToList(*value, valueSize, myValueList);
+	list<int> myColList;
+	arrToListInt(*colInd, colIndSize, myColList);
+	
 	for (int n = rowPtr[i]; n<rowPtr[i]+rowSize(rowPtr, i); n++){
 		if ((*colInd)[n] == j){
-			pos = n;
-			arrRemove(value, valueSize, pos);
-			arrRemoveInt(colInd, colIndSize, pos);
+			list<double>::iterator it = myValueList.begin(); advance(it, n);
+			myValueList.erase(it);
+			
+			list<int>::iterator it2 = myColList.begin(); advance(it2, n);
+			myColList.erase(it2);
+			
+			
+			
 			for (int m = i+1; m<rowPtrSize; m++) rowPtr[m]--;
 		}
 	}

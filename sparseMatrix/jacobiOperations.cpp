@@ -5,7 +5,6 @@ using namespace std;
  * get the diagonal matrix D, also takes the inverse of the diagonal elements
  */
 void getD(double *Dvalue[], int &DvalueSize, int DrowPtr[], int DrowPtrSize, int *DcolInd[], int &DcolIndSize){
-	cout<<"2"<<endl;
 	int totalRow = DrowPtrSize-1;
 	int totalCol = colNum(*DcolInd, DcolIndSize); 
 	for (int i = 0; i<totalRow; i++){
@@ -124,8 +123,7 @@ void add(double a[], double b[], int size, double c[]){
 	}
 }
 
-		
-void testJacobi(){
+void testJacobiOperations(){
 	int valueSize = 15;
 	int rowPtrSize = 6;
 	int colIndSize = 15;
@@ -156,8 +154,6 @@ void testJacobi(){
 	for (int i = 0; i < DcolIndSize; i++) DcolInd[i] = assignColInd[i];
 	
 	getD(&Dvalue, DvalueSize, DrowPtr, DrowPtrSize, &DcolInd, DcolIndSize);
-	//cout<<"D= "<<endl;
-	//printA(Dvalue, DcolInd, DcolIndSize, DrowPtr, DrowPtrSize);
 	
 	//test getL
 	int LvalueSize = 15;
@@ -173,8 +169,6 @@ void testJacobi(){
 	for (int i = 0; i < LcolIndSize; i++) LcolInd[i] = assignColInd[i];
 	
 	getL(&Lvalue, LvalueSize, LrowPtr, LrowPtrSize, &LcolInd, LcolIndSize);
-	//cout<<"L= "<<endl;
-	//printA(Lvalue, LcolInd, LcolIndSize, LrowPtr, LrowPtrSize);
 	
 	//test getU
 	int UvalueSize = 15;
@@ -190,14 +184,8 @@ void testJacobi(){
 	for (int i = 0; i < UcolIndSize; i++) UcolInd[i] = assignColInd[i];
 	
 	getU(&Uvalue, UvalueSize, UrowPtr, UrowPtrSize, &UcolInd, UcolIndSize);
-	//cout<<"U= "<<endl;
-	//printA(Uvalue, UcolInd, UcolIndSize, UrowPtr, UrowPtrSize);
 	
-	
-	//test inverse D
-	//inverseD(Dvalue, DvalueSize, DrowPtr, DrowPtrSize, DcolInd, DcolIndSize);
-	//cout<<"D^-1= "<<endl;
-	//printA(Dvalue, DcolInd, DcolIndSize, DrowPtr, DrowPtrSize);
+
 	
 	//test L+U
 	int LUvalueSize = 15;
@@ -212,8 +200,6 @@ void testJacobi(){
 	int * LUcolInd = new int[LUcolIndSize];
 	for (int i = 0; i < LUcolIndSize; i++) LUcolInd[i] = assignColInd[i];
 	LplusU(&LUvalue, LUvalueSize, LUrowPtr, LUrowPtrSize, &LUcolInd, LUcolIndSize);
-	//cout<<"L + U = "<<endl;
-	//printA(LUvalue, LUcolInd, LUcolIndSize, LUrowPtr, LUrowPtrSize);
 
 	//test iteration
 	int DLUvalueSize = LUvalueSize;
@@ -228,8 +214,6 @@ void testJacobi(){
 	int * DLUcolInd = new int[DLUcolIndSize];
 	for (int i = 0; i < DLUcolIndSize; i++) DLUcolInd[i] = LUcolInd[i];
 	iteration(Dvalue, LUvalue, LUvalueSize, LUrowPtr, LUrowPtrSize, LUcolInd, LUcolIndSize, DLUvalue);
-	//cout<<"D^-1 * (L+U) = "<<endl;
-	//printA(DLUvalue, DLUcolInd, DLUcolIndSize, DLUrowPtr, DLUrowPtrSize);
 	
 	//test product
 	//get intercept
@@ -244,94 +228,28 @@ void testJacobi(){
 	for (int i = 0; i < cepSize; i++) cep[i] = 0.0;
 	
 	product(Dvalue, DvalueSize, DrowPtr, DrowPtrSize, DcolInd, DcolIndSize, b, cep);
-//		for (int i = 0; i < cepSize; i++) 
-//		cout <<"cep"<<cep[i]<<endl;
 
 	//Start of Jacobi Iterative Method
 	//Uncomment for hacker week 6 practice 1 
-//	int xSize = cepSize;
-//	double * x = new double[xSize];
-//	for (int i = 0; i < cepSize; i++) x[i] = cep[i];
-//	int count = 0;
-//	double * xTemp = new double[xSize];
-//	for (int i = 0; i < xSize; i++) xTemp[i] = 0;
-//	
-//	double * normTemp = new double[xSize];
-//	for (int i = 0; i < xSize; i++) normTemp[i] = 0;
-//	
-//	add(x, xTemp, xSize, normTemp);
-//	while (vectorNorm(normTemp, xSize) > 10E-7){
-//		for (int i = 0; i < xSize; i++) xTemp[i] = x[i];
-//		count++;
-//		double* prod = new double[xSize];
-//		product(DLUvalue, DLUvalueSize, DLUrowPtr, DLUrowPtrSize, DLUcolInd, DLUcolIndSize, x, prod);
-//		add(prod, cep, cepSize, x);
-//		for (int i = 0; i < xSize; i++) xTemp[i] = -1*xTemp[i];
-//		add(x, xTemp, xSize, normTemp);
-//	}
-//	
-//	cout<<"x: "<<endl;
-//	for (int i = 0; i < xSize; i++) 
-//	cout <<x[i]<<endl;
-//	cout<<"number of iterations: "<<count<<endl;
-//	
-//	double * check = new double[xSize]; for (int i = 0; i < xSize; i++) check[i] = 0;
-//	product(value, valueSize, rowPtr, rowPtrSize, colInd, colIndSize, x, check);
-//	cout<<"checking the evolution of the residual vector"<<endl;
-//	for (int i = 0; i < xSize; i++) check[i] = -1*check[i];
-//	double * check2 = new double[xSize]; for (int i = 0; i < xSize; i++) check2[i] = 0;
-//	add(check, b, bSize, check2);
-//	
-//	
-//	for (int i = 0; i < xSize; i++) 
-//	cout <<check2[i]<<endl;
-//	cout <<"residual vector norm: "<<vectorNorm(check2, bSize)<<endl;
-	
-	//Start of SOR
-	//Uncomment for hacker week 6 practice 2
 	int xSize = cepSize;
 	double * x = new double[xSize];
 	for (int i = 0; i < cepSize; i++) x[i] = cep[i];
-	
-	double w = 0.5;
-
+	int count = 0;
 	double * xTemp = new double[xSize];
 	for (int i = 0; i < xSize; i++) xTemp[i] = 0;
 	
 	double * normTemp = new double[xSize];
 	for (int i = 0; i < xSize; i++) normTemp[i] = 0;
 	
-	int count = 0;
 	add(x, xTemp, xSize, normTemp);
 	while (vectorNorm(normTemp, xSize) > 10E-7){
-		count++;
-		cout<<"count: "<<count<<endl;
-		cout<<"x: "; for (int i = 0; i < xSize; i++) cout<<x[i]<<" ";cout<<endl;
 		for (int i = 0; i < xSize; i++) xTemp[i] = x[i];
-		
-		double * prodIt = new double[xSize]; for (int i = 0; i < xSize; i++) prodIt[i] = 0;
-		product(value, valueSize, rowPtr, rowPtrSize, colInd, colIndSize, x, prodIt);
-		for (int i = 0; i < xSize; i++) prodIt[i] = -1*prodIt[i];
-		double * diffbAx = new double[xSize]; for (int i = 0; i < xSize; i++) diffbAx[i] = 0;
-		add(prodIt, b, bSize, diffbAx);
-		cout<<"diffbAx: "; for (int i = 0; i < xSize; i++) cout<<diffbAx[i]<<" ";cout<<endl;
-		
-		cout<<"r:^k norm: "<<vectorNorm(diffbAx, xSize)<<endl;
-		//pproduct is wD^-1(b-Ax)
-		double * pprodIt = new double[xSize]; for (int i = 0; i < xSize; i++) pprodIt[i] = 0;
-		product(Dvalue, DvalueSize, DrowPtr, DrowPtrSize, DcolInd, DcolIndSize, diffbAx, pprodIt);
-		for (int i = 0; i < xSize; i++) pprodIt[i] = w*pprodIt[i]; 
-		cout<<"prodIt: "; for (int i = 0; i < xSize; i++) cout<<pprodIt[i]<<" ";cout<<endl;
-		
-		add(x, pprodIt, xSize, x);
-		
-		cout<<"xk-1 before norm: "; for (int i = 0; i < xSize; i++) cout<<xTemp[i]<<" ";cout<<endl;
-		cout<<"xk before norm: "; for (int i = 0; i < xSize; i++) cout<<x[i]<<" ";cout<<endl;
+		count++;
+		double* prod = new double[xSize];
+		product(DLUvalue, DLUvalueSize, DLUrowPtr, DLUrowPtrSize, DLUcolInd, DLUcolIndSize, x, prod);
+		add(prod, cep, cepSize, x);
 		for (int i = 0; i < xSize; i++) xTemp[i] = -1*xTemp[i];
 		add(x, xTemp, xSize, normTemp);
-		
-		cout<<"norm: "<<vectorNorm(normTemp, xSize)<<endl;
-
 	}
 	
 	cout<<"x: "<<endl;
@@ -350,5 +268,5 @@ void testJacobi(){
 	for (int i = 0; i < xSize; i++) 
 	cout <<check2[i]<<endl;
 	cout <<"residual vector norm: "<<vectorNorm(check2, bSize)<<endl;
-	(vectorNorm(check2, bSize)<1E7)? cout<<"Test Jacobi operations: no error"<<endl:cout<<"Test Jacobi operations: error"<<endl;
+	
 }
