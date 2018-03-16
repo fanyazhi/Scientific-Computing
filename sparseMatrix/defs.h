@@ -34,6 +34,13 @@ bool compareArrInt(int first[], int firstSize, int second[], int secondSize);
 void testList();
 
 /**
+functions in fullMatrixSolver.cpp
+*/
+void fullRowScale(double A[5][5], int i, int j, int c, double a);
+void fullSolve(double A[5][5], double x[], double b[], int r, int c);
+void testFullMatrixSolver();
+
+/**
 various helper functions in norms.cpp
 */
 double infinityNorm(double value[], int rowPtr[], int rowPtrSize);
@@ -57,14 +64,6 @@ double retrieve(double value[], int rowPtr[], int colInd[], int i, int j);
 int rowSize(int rowPtr[], int r);
 void printA(double value[], int colInd[], int colIndSize, int rowPtr[], int rowPtrSize);
 void testCrsOperations();
-
-
-/**
-functions in fullMatrixSolver.cpp
-*/
-void fullRowScale(double A[5][5], int i, int j, int c, double a);
-void fullSolve(double A[5][5], double x[], double b[], int r, int c);
-void testFullMatrixSolver();
 
 
 /**

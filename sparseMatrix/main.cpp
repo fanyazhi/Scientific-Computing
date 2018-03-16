@@ -11,6 +11,8 @@
 using namespace std;
 
 int main(){
+	//modularTests();
+
 	/****read value.csv into a list****/
     list<double> myValueList;
     string myValue;

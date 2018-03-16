@@ -1,0 +1,19 @@
+Method tests
+----------------------------------------------------
+Test infinityNorm: no error
+Test firstNorm: no error
+Test arrToList: no error
+Test arrSwap case 1: no error
+Test arrSwap case 2: no error
+Test arrSwap case 3: no error
+Test rowPermute case 1: no error
+Test rowPermute case 2: no error
+Test rowPermute case 3: no error
+Test rowScale case 1: no error
+Test rowScale case 2: no error
+Test rowScale case 3 with deletion: no error
+
+Main method tests under Wilkinson Principle
+----------------------------------------------------
+compare result from Jacobi method and full matrix solver: no error
+
