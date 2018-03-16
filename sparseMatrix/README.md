@@ -12,13 +12,13 @@ Organization: <br />
                  /    \
          Jacobi.cpp  modular_tests.cpp
                /           |
-	      /            |
-	     /             |
+	         /              |
+	        /               |
         norms.cpp   Jacobi_operations.cpp
                   	   |
 	                   |
                     crs_operations.cpp
                            |
-			   |
+			       |
                         list.cpp
 
