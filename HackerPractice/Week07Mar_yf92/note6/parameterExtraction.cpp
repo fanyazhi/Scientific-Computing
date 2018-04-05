@@ -50,3 +50,8 @@ int main(){
 
 	return 0;
 }
+
+
+
+
+norm(delta1(x1, x2), delta2(x1, x2))
