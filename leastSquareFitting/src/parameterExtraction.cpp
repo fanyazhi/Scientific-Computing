@@ -6,90 +6,139 @@
 //  Copyright © 2018 Yazhi and Yijia. All rights reserved.
 //
 
-#include "parameterExtraction.h"
-#include <iostream>
 #include <cmath>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <iterator>
 #include <vector>
+#include <Eigen/Dense>
+
 using namespace std;
-
-const double x[] = {1.0, 4.5, 9.0, 20, 74, 181 };
-const double y[] = {3.0, 49.4, 245, 1808, 2.2E4, 7.3E4};
-double p = 0.0001; //perturbation
+using namespace Eigen;
 
 
-double V(double a, double m){
+// ----------------------------------------------------------------------------------------
+
+/*
+   Some global variables are used for conveniences.
+   Their values and meanings are explained below.
+*/
+double p = 0.0001; //the perturbation used in finite difference derivative approximation
+
+
+// ----------------------------------------------------------------------------------------
+
+double f(vector<double> a, VectorXd xi){
+    return pow(log(a[0])+a[1]*log(xi(0))-log(xi(1)),2);
+}
+
+double V(vector<double> a, MatrixXd x){
     double v = 0;
-    for (int i = 0; i<6; i++){
-        v += pow(log(a)+m*log(x[i])-log(y[i]),2);
+    //take the sum of all the squared differences for all measurement
+    for (int i = 0; i < x.cols(); i++){
+        v += f(a, x.col(i));
     }
     return v;
 }
 
-double dVdx1(double a, double m){
-    double sum = 0;
-    for (int i = 0; i<6; i++){
-        sum += 2*log(x[i])*(log(a)+m*log(x[i])-log(y[i]));
-    }
+double partialDerivative(vector<double> a, int d, MatrixXd x){
+    //d determines which parameters in a to take the derivative with
+    vector<double> b = a;
+    b[d] = a[d]*(1+p);
 
-    return sum;
-}
-
-double dVdx2(double a, double m){
     double sum = 0;
-    for (int i = 0; i<6; i++){
-        sum += 2*(log(a)+m*log(x[i])-log(y[i]));
-        //sum += ((log(a)+(1+p)*m*log(x[i])-log(y[i]))-(log(a)+m*log(x[i])-log(y[i])))/(p*m);
+    for (int i = 0; i < x.cols(); i++){
+        sum += (f(b, x.col(i)) - f(a, x.col(i))) / (a[d]*p);
     }
     return sum;
 }
 
-double delta1(double x1, double x2){
-    double J12 = 0, J21 = 0, J11 = 0, J22 = 0;
-    for (int i = 0; i<6; i++){
-        J11 += (V(x1*(1+p)*(1+p),x2)-2*V(x1*(1+p), x2)+V(x1, x2))/(p*x1*p*x1);
-        J12 += (V(x1*(1+p),x2*(1+p))-2*V(x1, x2*(1+p))+V(x1, x2))/(p*x1*p*x2);
-        J21 += (V(x1*(1+p),x2*(1+p))-2*V(x1*(1+p), x2)+V(x1, x2))/(p*x1*p*x2);
-        J22 += (V(x1,x2*(1+p)*(1+p))-2*V(x1, x2*(1+p))+V(x1, x2))/(p*x2*p*x2);
+double doubleDerivative(vector<double> a, int d1, int d2, MatrixXd x) {
+    //d1 and d2 determine which parameters in a to take the derivative with
+    vector<double> b = a;
+    b[d1] = a[d1] * (1 + p);
+    vector<double> c = b;
+    c[d2] = a[d2] * (1 + p);
+
+    //taking partial derivative twice with a[d1] and a[d2], use derivation from backward difference
+    double sum = 0;
+    for (int i = 0; i < x.cols(); i++) {
+        sum += (f(c, x.col(i)) - 2*f(b, x.col(i)) + f(a, x.col(i))) / (a[d1]*p*a[d2]*p);
     }
-    return (-1.0/(J11*J22-J12*J21))*(J22*dVdx1(x1, x2)-J12*dVdx2(x1, x2));
-}
-double delta2(double x1, double x2){
-    double J12 = 0, J21 = 0, J11 = 0, J22 = 0;
-    for (int i = 0; i<6; i++){
-        J11 += (V(x1*(1+p)*(1+p),x2)-2*V(x1*(1+p), x2)+V(x1, x2))/(p*x1*p*x1);
-        J12 += (V(x1*(1+p),x2*(1+p))-2*V(x1, x2*(1+p))+V(x1, x2))/(p*x1*p*x2);
-        J21 += (V(x1*(1+p),x2*(1+p))-2*V(x1*(1+p), x2)+V(x1, x2))/(p*x1*p*x2);
-        J22 += (V(x1,x2*(1+p)*(1+p))-2*V(x1, x2*(1+p))+V(x1, x2))/(p*x2*p*x2);
-    }
-    return (-1.0/(J11*J22-J12*J21))*(-J21*dVdx1(x1, x2)+J11*dVdx2(x1, x2));
+    return 6*sum;
+
 }
 
-double norm(double a, double b){
-    return sqrt(pow(a,2)+pow(b, 2));
+vector<double> getDelta(vector<double> a, MatrixXd x){
+    //find the Hessian Matrix
+    MatrixXd H (a.size(), a.size());
+    for (int i = 0; i < a.size(); i++){
+        for (int j = 0; j < a.size(); j++){
+            H(i, j) = doubleDerivative(a, i, j, x);
+        }
+    }
+
+    //find the inverse of the Hessian matrix
+    MatrixXd Hi (a.size(), a.size());
+    Hi = H.inverse();
+
+    //find the divergence of V
+    VectorXd dV(a.size());
+    for (int i = 0; i < a.size(); i++){
+        dV(i) = partialDerivative(a, i, x);
+    }
+
+    //delta x is the negative inverse of H multiplied by divergence of V
+    vector<double> delta(a.size());
+    for (int i = 0; i < a.size(); i++){
+        for (int j = 0; j < a.size(); j++)
+        delta[i] += -1.0* (Hi(j,i)*dV(j));
+    }
+    return delta;
 }
 
-int main(){
-    double x1 = 2; double x2 = 1;
-    int count1= 0;
-    double t = 0.5;
+double norm(vector<double> a){
+    double sum = 0;
+    for (int i = 0; i < a.size(); i++){
+        sum += pow(a[i], 2);
+    }
+    return sqrt(sum);
+}
+
+vector<double> parameterExtraction(vector<double> a, MatrixXd x){
+    int count= 0;
+    double t = 1;
     double threshold = 1E-7;
-    cout<<"when xi(0) = (0,0): "<<endl;
-    while(norm(delta1(x1, x2), delta2(x1, x2)) > threshold && V(x1+t*delta1(x1, x2), x2+t*delta2(x1, x2))<=V(x1, x2)+1E-5 || V(x1, x2) >0.5){
-        cout<<"x1: "<<x1<<" x2: "<<x2<<" delta(x) norm: "<<norm(delta1(x1, x2), delta2(x1, x2))<<" V: "<<V(x1, x2)<<" t: "<<t<<endl;
-        x1 += t*delta1(x1, x2);
-        x2 += t*delta2(x1, x2);
-        count1++;
+    double maxIteration = 100000;
+    while(count<maxIteration){
+
+        vector<double> delta = getDelta(a, x);
+        cout<<"a: "<<a[0]<<" m: "<<a[1]<<" delta(x) norm: "<<norm(delta)<<" V: "<<V(a, x)<<" t: "<<t<<endl;
+        vector<double> temp = a;
+
+        for (int i = 0; i < a.size(); i++) temp[i] = a[i] + t* delta[i];
+        if (norm(delta) < threshold ) {
+            cout<<"norm of delta x converged to threshold"<<endl;
+            break;
+        }
+
+        for (int i = 0; i < a.size(); i++) a[i] = temp[i];
+        count++;
+
     }
 
-
-    cout<<"when xi(0) = (0,0), converges after "<<count1<<" iterations"<<endl;
-    cout<<x1<<" "<<x2<<" "<<V(x1, x2)<<endl;
-
-
-    cout<<"test"<<endl;
-    for (int i = 0; i<6; i++){
-        cout<<x1*pow(x[i],x2)-y[i]<<endl;
+    if (count>maxIteration){
+        cout<<"Too many iterations. Result is not converging."
+              " Initial guess may not be in the basin of attraction. "<<endl;
     }
-    return 0;
+
+    //print the result parameters
+    for (int i = 0; i < a.size(); i++) {
+        cout<<"parameter a["<<i<<"] = "<<a[i]<<" ";
+        cout<<endl;
+    }
+    cout<<"V = "<<V(a, x)<<endl;
+
+    return a;
 }

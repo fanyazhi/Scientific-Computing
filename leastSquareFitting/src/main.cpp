@@ -1,15 +1,36 @@
-#include "fullMatrix.h"
+//
+//  parameterExtraction.h
+//  Least Square Fitting
+//
+//  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 4/3/18.
+//  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+//
+
 #include "parameterExtraction.h"
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <Eigen/Dense>
+
+using namespace Eigen;
 using namespace std;
+
+// ----------------------------------------------------------------------------------------
+
 int main()
 {
-    vector<double> value = {1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0};
-    Matrix m = constructMatrix(3, value);
-    printMatrix(m);
-    vector<double> x = {1.0, 1.0, 1.0};
-    vector<double> b = productAx(m, x);
+
+
+//read in x1{}, x2{}, and Smeasured{}
+
+    MatrixXd x (2, 6);
+    x << 1.0, 4.5, 9.0, 20, 74, 181,
+            3.0, 49.4, 245, 1808, 2.2E4, 7.3E4;
+
+    //Declare initial guesses
+    vector<double> a{2.8, 1.8};
+
+    vector<double> result = parameterExtraction(a, x);
+
     return 0;
 }
