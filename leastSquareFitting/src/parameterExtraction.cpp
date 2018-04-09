@@ -32,7 +32,7 @@ double threshold = 10E-7;   //Stop condition: threshold on delta x norm to confi
 
 double maxIteration = 10E7;  //Stop condition: max number of iterations allowed to observe convergence
 
-double acceptableV = 1E-7;   /* Stop condition: when delta x threshold is difficult to find,
+double acceptableV = 1E-4;   /* Stop condition: when delta x threshold is difficult to find,
                                V has stopped decreasing, and ||V||2 has reached acceptableV, assume convergence occurred
                                Note that acceptable V is only a safe check
                                ||V||2 can can go beyond this value as long as it is still converging
@@ -153,6 +153,14 @@ vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<doubl
         if (V(temp, x, f)>= V(a, x, f) && V(a, x, f) > acceptableV ){
             cout<<"PARAMETER SEARCH FAILED"<<endl
                 <<"Result is diverging."
+                  " Initial guess may not be in the basin of attraction. "<<endl;
+            break;
+        }
+
+        //check if result is NAN
+        if (V(a, x, f) != V(a, x, f)){
+            cout<<"PARAMETER SEARCH FAILED"<<endl
+                <<"Result is NAN."
                   " Initial guess may not be in the basin of attraction. "<<endl;
             break;
         }

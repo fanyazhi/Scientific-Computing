@@ -56,4 +56,17 @@ double normalizedEKVmodel (vector<double> a, VectorXd xi);
 */
 MatrixXd constructVariables ();
 
+// ----------------------------------------------------------------------------------------
+
+/* full grid for initial conditions, print out result from each search
+        Parameters:
+                none
+        Return:
+                none
+
+*/
+void fullGridSearch ();
+
+
+
 #endif //LEASTSQUAREFITTING_EKV_H

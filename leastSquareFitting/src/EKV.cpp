@@ -7,6 +7,7 @@
 //
 
 #include "EKV.h"
+#include "parameterExtraction.h"
 #include <cmath>
 #include <iomanip>
 #include <cstdio>
@@ -83,5 +84,34 @@ MatrixXd constructVariables () {
         }
     }
     return X;
+}
+
+void fullGridSearch () {
+    //get measured variables
+    MatrixXd x = constructVariables ();
+
+    //set up the full grid of initial guesses
+    int parameterNum = 3; //number of parameters
+    vector<double> initialIS = {1E-8, 3E-8, 1E-7, 3E-7, 1E-6, 3E-6, 1E-5, 3E-5, 1E-4};
+    vector<double> initialk = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+    vector<double> initialVth = {0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1};
+
+    //loop through full grid and perform EVK parameter extraction
+    for (int i = 0; i < initialIS.size()-1; i++){
+        for (int j = 0; j < initialk.size()-1; j++){
+            for (int k = 0; k < initialVth.size()-1; k++){
+                cout<<"--------------------------------------------------------------------------------"<<endl;
+                cout<<"initialIS = "<<initialIS[i]<<" initialk = "<<initialk[j]<<" initialVth "<<initialVth[k]<<endl;
+                vector<double> a(parameterNum);
+                //second set of a for secant method which takes the averge between 2 consecutive guesses
+                vector<double> a2(parameterNum);
+                a[0] = initialIS[i];    a2[0] = (initialIS[i]+initialIS[i+1])/2;
+                a[1] = initialk[j];     a2[1] = (initialk[i]+initialk[i+1])/2;
+                a[2] = initialVth[k];   a2[2] = (initialIS[i]+initialIS[i+1])/2;
+                vector<double> result = parameterExtraction(a, x, EKVmodel);
+            }
+        }
+    }
+
 }
 
