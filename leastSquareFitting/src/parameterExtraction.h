@@ -11,46 +11,26 @@
 
 #include <vector>
 #include <Eigen/Dense>
+
 using namespace std;
 using namespace Eigen;
 
+// ----------------------------------------------------------------------------------------
+
+/*
+   alias type name for a model function
+*/
 typedef double (*T)(vector<double>, VectorXd);
 
 // ----------------------------------------------------------------------------------------
 
-/* (Smodel - Smeasure)^2
-   the squared difference of each measured independent variables
-        Parameters:
-                a: set of meaningful parameters
-                xi: the measured set of an independent variable
-
-        Return:
-                the squared difference between Smodel and Smeasure for a single measurement
-*/
-double f(vector<double> a, VectorXd xi);
-
-// ----------------------------------------------------------------------------------------
-
-/* sum[(Smodel - Smeasure)^2]
-   the sum of squared differences of all measured independent variables
-        Parameters:
-                a: set of meaningful parameters
-                x: the measured independent variables contained in a matrix
-                   number of rows = number of independent variables
-                   number of columns = number of measurements for a variable
-        Return:
-                the sum of squared difference between Smodel and Smeasure for all measurements
-*/
-double V(vector<double> a, MatrixXd x, T f);
-
-// ----------------------------------------------------------------------------------------
-
-/* parameter extraction with quansi-Newton method
+/* parameter extraction with quasi-Newton method
         Parameters:
                 a: initial guess of the parameters
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 resulted parameters after least squared fitting
 */
@@ -65,10 +45,26 @@ vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f);
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 resulted parameters after least squared fitting
 */
 vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<double> a, MatrixXd x, T f);
+
+// ----------------------------------------------------------------------------------------
+
+/* sum[(Smodel - Smeasure)^2]
+   the sum of squared differences of all measured independent variables
+        Parameters:
+                a: set of meaningful parameters
+                x: the measured independent variables contained in a matrix
+                   number of rows = number of independent variables
+                   number of columns = number of measurements for a variable
+                f: model function
+        Return:
+                the sum of squared difference between Smodel and Smeasure for all measurements
+*/
+double V(vector<double> a, MatrixXd x, T f);
 
 // ----------------------------------------------------------------------------------------
 
@@ -79,6 +75,7 @@ vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<doubl
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 delta x for the next iteration
 */
@@ -94,6 +91,7 @@ vector<double> getDelta(vector<double> a, MatrixXd x, T f);
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 delta x for the next iteration
 */
@@ -108,6 +106,7 @@ vector<double> getDelta_Secant(vector<double> aPrevious, vector<double> a, Matri
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 numerical partial derivative
 */
@@ -123,6 +122,7 @@ double partialDerivative(vector<double> a, int d, MatrixXd x, T f);
                 x: the measured independent variables contained in a matrix
                    number of rows = number of independent variables
                    number of columns = number of measurements for a variable
+                f: model function
         Return:
                 numerical double derivative
 */

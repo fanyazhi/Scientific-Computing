@@ -26,12 +26,13 @@ using namespace Eigen;
    They are declared and explained here for convenience
 */
 double VSB = 0.0;       //S is shorted to B
-double VT = 26E-3;      //VT in volts
 
+double VT = 26E-3;      //VT in volts
 
 // ----------------------------------------------------------------------------------------
 
 double EKVmodel (vector<double> a, VectorXd xi) {
+    //Smodel = ID(VGS, VDS; IS, k, Vth)
     //ID - IF + IR = 0
     //IF = IS*pow( log(1+exp( (k*(VGB - Vth)-VSB) / (2*VT) )) , 2);
     //IR = IS*pow( log(1+exp( (k*(VGB - Vth)-VDB) / (2*VT) )) , 2);
@@ -41,8 +42,17 @@ double EKVmodel (vector<double> a, VectorXd xi) {
     return pow((xi[2] - IF +IR) , 2);
 }
 
-MatrixXd constructVariables () {
+double normalizedEKVmodel (vector<double> a, VectorXd xi) {
+    //Smodel = ID(VGS, VDS; IS, k, Vth) / IDmeasured
 
+    double IF = a[0]*pow( log(1+exp( (a[1]*(xi[0] - a[2])-VSB) / (2*VT) )) , 2);
+    double IR = a[0]*pow( log(1+exp( (a[1]*(xi[0] - a[2])-xi[1]) / (2*VT) )) , 2);
+    double ID = (IF - IR)/xi[2];
+    return pow((ID - IF +IR) , 2);
+}
+
+MatrixXd constructVariables () {
+    //initiate vector x to store all elements in file
     vector<double> x;
 
     ifstream inValue;
@@ -63,10 +73,13 @@ MatrixXd constructVariables () {
         x.push_back(value);
     }
 
-    MatrixXd X (3, 1010);
-    for (int i = 0; i < x.size()/3; i++){
-        for (int j = 0; j < 3; j++) {
-            X(j, i) = x[i*3+j];
+    //convert from array to matrix with known row and column numbers
+    int rown = 3;
+    int coln = 1010;
+    MatrixXd X (rown, coln);
+    for (int i = 0; i < x.size()/rown; i++){
+        for (int j = 0; j < rown; j++) {
+            X(j, i) = x[i*rown+j];
         }
     }
     return X;

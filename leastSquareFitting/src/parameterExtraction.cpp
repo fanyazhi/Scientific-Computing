@@ -25,11 +25,167 @@ using namespace Eigen;
    They are declared and explained here for convenience
 */
 double p = 0.0001;          //the perturbation used in finite difference derivative approximation
-double t = 1;               //weight on the increament delta x during each iteration
-double threshold = 1E-5;    //threshold on delta x norm to confirm convergence
-double maxIteration = 1E6;  //max number of iterations allowed to observe convergenc
+
+double quadTol = 0.2;       //tolerance for quadratic convergence check
+
+double threshold = 10E-7;   //Stop condition: threshold on delta x norm to confirm convergence
+
+double maxIteration = 10E7;  //Stop condition: max number of iterations allowed to observe convergence
+
+double acceptableV = 1E-7;   /* Stop condition: when delta x threshold is difficult to find,
+                               V has stopped decreasing, and ||V||2 has reached acceptableV, assume convergence occurred
+                               Note that acceptable V is only a safe check
+                               ||V||2 can can go beyond this value as long as it is still converging
+                            */
 
 // ----------------------------------------------------------------------------------------
+
+vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
+    int count= 0;
+    while(count<maxIteration){
+        //get delta x
+        vector<double> delta = getDelta(a, x, f);
+
+        //compute ||V||2 and ||delta||2
+        double V2 = V(a, x, f);
+        double D2 = 0;
+        for (int i = 0; i < a.size(); i++){
+            D2 += pow(delta[i],2) / pow(a[i],2);
+        }
+
+        //Print a[], ||delta(x)||2, ||V||2, and ||D||2
+        for (int i = 0; i < a.size(); i++){
+            cout<<"a["<<i<<"]: "<<a[i]<<" ";
+        }
+        cout<<" ||delta(x)||2: "<<norm(delta)<<" ||V||2: "<<V2<<" ||D||2: "<<D2;
+        vector<double> temp = a;
+
+        //add delta to a and store in temp
+        for (int i = 0; i < a.size(); i++) temp[i] = a[i] + delta[i];
+
+        //check for quadratic convergence
+        bool quadConvergence = true;
+        if (! ((1-quadTol)*sqrt(V(a, x, f))< V(temp, x, f) && V(temp, x, f)  < (1+quadTol)*sqrt(V(a, x, f))) ) {
+            quadConvergence = false;
+        }
+        cout << " Quadratic: " << quadConvergence << endl;
+
+
+        //check if convergence threshold is met
+        if (norm(delta) < threshold ) {
+            cout<<"norm of delta x converged to threshold after "<<count<<" iterations"<<endl;
+            break;
+        }
+
+        //check if result is diverging
+        if (V(temp, x, f)>= V(a, x, f) && V(a, x, f) > acceptableV ){
+            cout<<"PARAMETER SEARCH FAILED"<<endl
+                <<"Result is diverging."
+                  " Initial guess may not be in the basin of attraction. "<<endl;
+            break;
+        }
+
+        //check if result has converged even if specified threshold is not met
+        if (V(temp, x, f)>= V(a, x, f) && V(a, x, f) < acceptableV ){
+            cout<<"norm of delta x converged after "<<count<<" iterations"<<endl;
+            break;
+        }
+
+        //update a[i] for next iteration
+        for (int i = 0; i < a.size(); i++) a[i] = temp[i];
+        count++;
+
+    }
+
+    if (count>=maxIteration){
+        cout<<"PARAMETER SEARCH FAILED"<<endl
+            <<"Max number of iterations has been reached. Result is not converging."
+              " Initial guess may not be in the basin of attraction. "<<endl;
+    }
+
+    //print the result parameters
+    for (int i = 0; i < a.size(); i++) {
+        cout<<"parameter a["<<i<<"] = "<<a[i]<<" ";
+        cout<<endl;
+    }
+    cout<<"||V||2 = "<<V(a, x, f)<<endl;
+
+    return a;
+}
+
+vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<double> a, MatrixXd x, T f){
+    int count= 0;
+    while(count<maxIteration){
+        //get delta
+        vector<double> delta = getDelta_Secant(aPrevious, a, x, f);
+
+        //compute ||V||2 and ||delta||2
+        double V2 = V(a, x, f);
+        double D2 = 0;
+        for (int i = 0; i < a.size(); i++){
+            D2 += pow(delta[i],2) / pow(a[i],2);
+        }
+
+        //Print a[], ||delta(x)||2, ||V||2, and ||D||2
+        for (int i = 0; i < a.size(); i++){
+            cout<<"a["<<i<<"]: "<<a[i]<<" ";
+        }
+        cout<<" ||delta(x)||2: "<<norm(delta)<<" ||V||2: "<<V2<<" ||D||2: "<<D2;
+        vector<double> temp = a;
+
+        //add delta to a and store in temp
+        for (int i = 0; i < a.size(); i++) temp[i] = a[i] + delta[i];
+
+        //check for quadratic convergence
+        bool quadConvergence = true;
+        if (! ((1-quadTol)*V(a, x, f)< V(temp, x, f) && V(temp, x, f)  < (1+quadTol)*V(a, x, f)) ) {
+            quadConvergence = false;
+        }
+        cout << " Quadratic converge: " << quadConvergence << endl;
+
+        //check if convergence threshold is met
+        if (norm(delta) < threshold ) {
+            cout<<"norm of delta x converged to threshold after "<<count<<" iterations"<<endl;
+            break;
+        }
+
+        //check if result is diverging
+        if (V(temp, x, f)>= V(a, x, f) && V(a, x, f) > acceptableV ){
+            cout<<"PARAMETER SEARCH FAILED"<<endl
+                <<"Result is diverging."
+                  " Initial guess may not be in the basin of attraction. "<<endl;
+            break;
+        }
+
+        //check if result has converged even if specified threshold is not met
+        if (V(temp, x, f)>= V(a, x, f) && V(a, x, f) < acceptableV ){
+            cout<<"norm of delta x converged after "<<count<<" iterations"<<endl;
+            break;
+        }
+
+        //update both a(k) and a(k-1) for the next iteration
+        for (int i = 0; i < a.size(); i++) {
+            aPrevious[i] = a[i];
+            a[i] = temp[i];
+        }
+        count++;
+    }
+
+    if (count>=maxIteration){
+        cout<<"PARAMETER SEARCH FAILED"<<endl
+            <<"Max number of iterations has been reached. Result is not converging."
+              " Initial guess may not be in the basin of attraction. "<<endl;
+    }
+
+    //print the result parameters
+    for (int i = 0; i < a.size(); i++) {
+        cout<<"parameter a["<<i<<"] = "<<a[i]<<" ";
+        cout<<endl;
+    }
+    cout<<"||V||2 = "<<V(a, x, f)<<endl;
+
+    return a;
+}
 
 double V(vector<double> a, MatrixXd x, T f){
     double v = 0;
@@ -38,31 +194,6 @@ double V(vector<double> a, MatrixXd x, T f){
         v += f(a, x.col(i));
     }
     return v;
-}
-
-double partialDerivative(vector<double> a, int d, MatrixXd x, T f){
-    //d determines which parameters in a to take the derivative with
-    vector<double> b = a;
-    b[d] = a[d]*(1+p);
-
-    //taking partial derivative with a[d], use derivation from backward difference
-    return (V(b, x, f) - V(a, x, f)) / (a[d]*p);
-}
-
-double doubleDerivative(vector<double> a, int d1, int d2, MatrixXd x, T f) {
-    //d1 and d2 determine which parameters in a to take the derivative with
-    vector<double> b = a;
-    b[d1] = a[d1] * (1 + p);
-    vector<double> c = b;
-    c[d2] = a[d2] * (1 + p);
-
-    //taking partial derivative twice with a[d1] and a[d2], use derivation from backward difference
-    return 6* (V(c, x, f) - 2*V(b, x, f) + V(a, x, f)) / (a[d1]*p*a[d2]*p);
-}
-
-double secantDerivative(vector<double> a, vector<double> aPrevious, int d, MatrixXd x, T f){
-    //d determines which parameters in a to take the derivative with
-    return (V(a, x, f) - V(aPrevious, x, f)) / (a[d] - aPrevious[d]);
 }
 
 vector<double> getDelta(vector<double> a, MatrixXd x, T f){
@@ -88,13 +219,14 @@ vector<double> getDelta(vector<double> a, MatrixXd x, T f){
     vector<double> delta(a.size());
     for (int i = 0; i < a.size(); i++){
         for (int j = 0; j < a.size(); j++)
-        delta[i] += -1.0* (Hi(j,i)*dV(j));
+            delta[i] += -1.0* (Hi(j,i)*dV(j));
     }
     return delta;
 }
 
 vector<double> getDelta_Secant(vector<double> aPrevious, vector<double> a, MatrixXd x, T f){
     //find the Jacobbian Matrix
+    //initiate a matrix of zeros, fill the diagonal elements with dV/dx with secant method
     MatrixXd J = MatrixXd::Zero(a.size(), a.size());
     for (int i = 0; i < a.size(); i++){
         //use the secant method to evaluate matrix J
@@ -120,6 +252,26 @@ vector<double> getDelta_Secant(vector<double> aPrevious, vector<double> a, Matri
     return delta;
 }
 
+double partialDerivative(vector<double> a, int d, MatrixXd x, T f){
+    //d determines which parameters in a to take the derivative with
+    vector<double> b = a;
+    b[d] = a[d]*(1+p);
+
+    //taking partial derivative with a[d], use derivation from backward difference
+    return (V(b, x, f) - V(a, x, f)) / (a[d]*p);
+}
+
+double doubleDerivative(vector<double> a, int d1, int d2, MatrixXd x, T f) {
+    //d1 and d2 determine which parameters in a to take the derivative with
+    vector<double> b = a;
+    b[d1] = a[d1] * (1 + p);
+    vector<double> c = b;
+    c[d2] = a[d2] * (1 + p);
+
+    //taking partial derivative twice with a[d1] and a[d2], use derivation from backward difference
+    return 6* (V(c, x, f) - 2*V(b, x, f) + V(a, x, f)) / (a[d1]*p*a[d2]*p);
+}
+
 double norm(vector<double> a){
     double sum = 0;
     for (int i = 0; i < a.size(); i++){
@@ -128,79 +280,3 @@ double norm(vector<double> a){
     return sqrt(sum);
 }
 
-vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
-    int count= 0;
-    while(count<maxIteration){
-
-        vector<double> delta = getDelta(a, x, f);
-        for (int i = 0; i < a.size(); i++){
-            cout<<"a["<<i<<"]: "<<a[i]<<" ";
-        }
-        cout<<" delta(x) norm: "<<norm(delta)<<" V: "<<V(a, x, f)<<" t: "<<t<<endl;
-        vector<double> temp = a;
-
-        for (int i = 0; i < a.size(); i++) temp[i] = a[i] + t* delta[i];
-        if (norm(delta) < threshold ) {
-            cout<<"norm of delta x converged to threshold"<<endl;
-            break;
-        }
-
-        for (int i = 0; i < a.size(); i++) a[i] = temp[i];
-        count++;
-
-    }
-
-    if (count>maxIteration){
-        cout<<"Too many iterations. Result is not converging."
-              " Initial guess may not be in the basin of attraction. "<<endl;
-    }
-
-    //print the result parameters
-    for (int i = 0; i < a.size(); i++) {
-        cout<<"parameter a["<<i<<"] = "<<a[i]<<" ";
-        cout<<endl;
-    }
-    cout<<"V = "<<V(a, x, f)<<endl;
-
-    return a;
-}
-
-vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<double> a, MatrixXd x, T f){
-    int count= 0;
-    while(count<maxIteration){
-
-        vector<double> delta = getDelta_Secant(aPrevious, a, x, f);
-        for (int i = 0; i < a.size(); i++){
-            cout<<"a[ "<<i<<" ]: "<<a[i]<<" ";
-        }
-        cout<<" delta(x) norm: "<<norm(delta)<<" V: "<<V(a, x, f)<<" t: "<<t<<endl;
-        vector<double> temp = a;
-
-        for (int i = 0; i < a.size(); i++) temp[i] = a[i] + t* delta[i];
-        if (norm(delta) < threshold ) {
-            cout<<"norm of delta x converged to threshold"<<endl;
-            break;
-        }
-
-        //update both a(k) and a(k-1) for the next iteration
-        for (int i = 0; i < a.size(); i++) {
-            aPrevious[i] = a[i];
-            a[i] = temp[i];
-        }
-        count++;
-    }
-
-    if (count>=maxIteration){
-        cout<<"Too many iterations. Result is not converging."
-              " Initial guess may not be in the basin of attraction. "<<endl;
-    }
-
-    //print the result parameters
-    for (int i = 0; i < a.size(); i++) {
-        cout<<"parameter a["<<i<<"] = "<<a[i]<<" ";
-        cout<<endl;
-    }
-    cout<<"V = "<<V(a, x, f)<<endl;
-
-    return a;
-}
