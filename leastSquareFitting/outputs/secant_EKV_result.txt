@@ -1,0 +1,9 @@
+a[0]: 9.99997e-07 a[1]: 0.999995 a[2]: 0.999984  ||delta(x)||2: 4.23033 ||V||2: 0.000196084 ||D||2: 8.66698e+11 Quadratic converge: 0
+PARAMETER SEARCH FAILED
+Result is diverging. Initial guess may not be in the basin of attraction. 
+parameter a[0] = 9.99997e-07 
+parameter a[1] = 0.999995 
+parameter a[2] = 0.999984 
+||V||2 = 0.000196084
+
+
