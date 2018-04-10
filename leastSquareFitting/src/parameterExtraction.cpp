@@ -20,28 +20,10 @@ using namespace Eigen;
 
 // ----------------------------------------------------------------------------------------
 
-/*
-   Some constants are used throughout parameterExtraction.cpp.
-   They are declared and explained here for convenience
-*/
-double p = 0.0001;          //the perturbation used in finite difference derivative approximation
-
-double quadTol = 0.2;       //tolerance for quadratic convergence check
-
-double threshold = 10E-7;   //Stop condition: threshold on delta x norm to confirm convergence
-
-double maxIteration = 10E7;  //Stop condition: max number of iterations allowed to observe convergence
-
-double acceptableV = 1E-4;   /* Stop condition: when delta x threshold is difficult to find,
-                               V has stopped decreasing, and ||V||2 has reached acceptableV, assume convergence occurred
-                               Note that acceptable V is only a safe check
-                               ||V||2 can can go beyond this value as long as it is still converging
-                            */
-
-// ----------------------------------------------------------------------------------------
-
 vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
     int count= 0;
+    cout<<"------------------------------------"<<endl;
+    cout<<"PARAMETER SEARCH RESULT"<<endl;
     while(count<maxIteration){
         //get delta x
         vector<double> delta = getDelta(a, x, f);
@@ -58,9 +40,9 @@ vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
             cout<<"a["<<i<<"]: "<<a[i]<<" ";
         }
         cout<<" ||delta(x)||2: "<<norm(delta)<<" ||V||2: "<<V2<<" ||D||2: "<<D2;
-        vector<double> temp = a;
 
         //add delta to a and store in temp
+        vector<double> temp = a;
         for (int i = 0; i < a.size(); i++) temp[i] = a[i] + delta[i];
 
         //check for quadratic convergence
@@ -69,7 +51,6 @@ vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
             quadConvergence = false;
         }
         cout << " Quadratic: " << quadConvergence << endl;
-
 
         //check if convergence threshold is met
         if (norm(delta) < threshold ) {
@@ -94,7 +75,6 @@ vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
         //update a[i] for next iteration
         for (int i = 0; i < a.size(); i++) a[i] = temp[i];
         count++;
-
     }
 
     if (count>=maxIteration){
@@ -109,12 +89,15 @@ vector<double> parameterExtraction(vector<double> a, MatrixXd x, T f){
         cout<<endl;
     }
     cout<<"||V||2 = "<<V(a, x, f)<<endl;
+    cout<<"||delta x||2 = "<<norm(getDelta(a, x, f))<<endl;
 
     return a;
 }
 
 vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<double> a, MatrixXd x, T f){
     int count= 0;
+    cout<<"------------------------------------"<<endl;
+    cout<<"PARAMETER SEARCH RESULT"<<endl;
     while(count<maxIteration){
         //get delta
         vector<double> delta = getDelta_Secant(aPrevious, a, x, f);
@@ -131,9 +114,9 @@ vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<doubl
             cout<<"a["<<i<<"]: "<<a[i]<<" ";
         }
         cout<<" ||delta(x)||2: "<<norm(delta)<<" ||V||2: "<<V2<<" ||D||2: "<<D2;
-        vector<double> temp = a;
 
         //add delta to a and store in temp
+        vector<double> temp = a;
         for (int i = 0; i < a.size(); i++) temp[i] = a[i] + delta[i];
 
         //check for quadratic convergence
@@ -191,13 +174,14 @@ vector<double> parameterExtraction_Secant(vector<double> aPrevious, vector<doubl
         cout<<endl;
     }
     cout<<"||V||2 = "<<V(a, x, f)<<endl;
+    cout<<"||delta x||2 = "<<norm(getDelta(a, x, f))<<endl;
 
     return a;
 }
 
 double V(vector<double> a, MatrixXd x, T f){
     double v = 0;
-    //take the sum of all the squared differences for all measurement
+    //take the sum of all measurements
     for (int i = 0; i < x.cols(); i++){
         v += f(a, x.col(i));
     }

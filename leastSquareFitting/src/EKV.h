@@ -17,6 +17,15 @@ using namespace Eigen;
 
 // ----------------------------------------------------------------------------------------
 
+/*
+   Some constants are used throughout the program.
+   They are declared and explained here for convenience
+*/
+const double VSB = 0.0;       //S is shorted to B
+const double VT = 26E-3;      //VT in volts
+
+// ----------------------------------------------------------------------------------------
+
 /* EKV function used to perform parameter extraction
    Smodel = ID(VGS, VDS; IS, k, Vth)
         Parameters:
@@ -34,11 +43,23 @@ double EKVmodel (vector<double> a, VectorXd xi);
    similar to EKV model, but ID is calculated from VGS and VDS
         Parameters:
                 a: initial guess of the parameters IS, k, Vth
-                x: xi: one measured set of all independent variables VGS, VDS
+                xi: one measured set of all independent variables VGS, VDS
         Return:
                 the squared difference between EKVmodel and EKVmeasure for a single measurement
 */
 double normalizedEKVmodel (vector<double> a, VectorXd xi);
+
+// ----------------------------------------------------------------------------------------
+
+/* get IDmodel from EKVmodel, can be used to validate result from EKV parameter extraction
+        Parameters:
+                VGS: VGS values in vector
+                VDS: VDS values in vector
+                a: IS, k, Vth  in a vector
+        Return:
+                the squared difference between EKVmodel and EKVmeasure for a single measurement
+*/
+vector <double> EKVmodel_getID (vector<double> a, vector<double> VGS, vector<double> VDS);
 
 // ----------------------------------------------------------------------------------------
 
@@ -60,13 +81,14 @@ MatrixXd constructVariables ();
 
 /* full grid for initial conditions, print out result from each search
         Parameters:
-                none
+                initialIS: set of initial guess for IS
+                initialk: set of initial guess for k
+                initialVth: set of initial guess for Vth
         Return:
                 none
 
 */
-void fullGridSearch ();
-
+void fullGridSearch (vector<double> initialIS, vector<double> initialk, vector<double> initialVth );
 
 
 #endif //LEASTSQUAREFITTING_EKV_H

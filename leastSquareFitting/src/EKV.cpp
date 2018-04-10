@@ -22,16 +22,6 @@ using namespace Eigen;
 
 // ----------------------------------------------------------------------------------------
 
-/*
-   Some constants are used throughout EKV.cpp.
-   They are declared and explained here for convenience
-*/
-double VSB = 0.0;       //S is shorted to B
-
-double VT = 26E-3;      //VT in volts
-
-// ----------------------------------------------------------------------------------------
-
 double EKVmodel (vector<double> a, VectorXd xi) {
     //Smodel = ID(VGS, VDS; IS, k, Vth)
     //ID - IF + IR = 0
@@ -50,6 +40,19 @@ double normalizedEKVmodel (vector<double> a, VectorXd xi) {
     double IR = a[0]*pow( log(1+exp( (a[1]*(xi[0] - a[2])-xi[1]) / (2*VT) )) , 2);
     double ID = (IF - IR)/xi[2];
     return pow((ID - IF +IR) , 2);
+}
+
+vector <double> EKVmodel_getID (vector<double> a, vector<double> VGS, vector<double> VDS) {
+    //Smodel = ID(VGS, VDS; IS, k, Vth)
+    //ID = IF - IR
+    vector<double> ID (VGS.size()); //size of all vectors are equal
+
+    for (int i = 0; i < VGS.size(); i++){
+        double IF = a[0]*pow( log(1+exp( (a[1]*(VGS[i] - a[2])-VSB) / (2*VT) )) , 2);
+        double IR = a[0]*pow( log(1+exp( (a[1]*(VGS[i] - a[2])-VDS[i]) / (2*VT) )) , 2);
+        ID[i] = IF - IR;
+    }
+    return ID;
 }
 
 MatrixXd constructVariables () {
@@ -86,15 +89,12 @@ MatrixXd constructVariables () {
     return X;
 }
 
-void fullGridSearch () {
+void fullGridSearch (vector<double> initialIS, vector<double> initialk, vector<double> initialVth ) {
     //get measured variables
     MatrixXd x = constructVariables ();
 
-    //set up the full grid of initial guesses
-    int parameterNum = 3; //number of parameters
-    vector<double> initialIS = {1E-8, 3E-8, 1E-7, 3E-7, 1E-6, 3E-6, 1E-5, 3E-5, 1E-4};
-    vector<double> initialk = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-    vector<double> initialVth = {0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1};
+    //number of parameters
+    int parameterNum = 3;
 
     //loop through full grid and perform EVK parameter extraction
     for (int i = 0; i < initialIS.size()-1; i++){

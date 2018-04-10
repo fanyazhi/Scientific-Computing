@@ -1,0 +1,13 @@
+------------------------------------
+PARAMETER SEARCH RESULT
+norm of delta x converged after 44217 iterations
+parameter a[0] = 1.58029e-06 
+parameter a[1] = 0.571274 
+parameter a[2] = 0.2533 
+||V||2 = 4.20473e-05
+||delta x||2 = 0.000902937
+------------------------------------
+ASYMPTOTIC VALIDATION RESULT
+VGS < Vth: ID behaves as an exponential function of VGS with ||error|| = 0
+VGS > Vth: ID behaves as an quadratic function to VGS with ||error|| = 0.346306
+VGS < Vth or VDS > VDsat : ID is insensitive to VDS with ||error|| = 0

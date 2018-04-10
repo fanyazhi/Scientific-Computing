@@ -10,6 +10,7 @@
 #include "parameterExtraction.h"
 #include "test.h"
 #include <cstdio>
+#include <iostream>
 #include <cmath>
 #include <vector>
 #include <Eigen/Dense>
@@ -18,28 +19,37 @@ using namespace Eigen;
 using namespace std;
 
 // ----------------------------------------------------------------------------------------
-
+/* Below is an example use of some major functions in Least Square Fitting.
+   The example performs quasi-Newton parameter extraction on an EKV model
+   and does asymptotic validation on the result parameters.
+*/
 
 int main()
 {
-    //Declare initial guesses
-    //IS, k, Vth
-    vector<double> a{1.6E-06 , 0.6 , 0.25 };
-    vector<double> a2{1.58e-06 , 0.58 , 0.253 };
-    //vector<double> a{1.58029e-06 , 0.571274 , 0.2533 };
-    //vector<double> a{8.81137e-07, 0.429298, 1.35112};
+    //Declare initial guess {IS, k, Vth}
+    vector<double> a{1E-6 , 1.0 , 1.0 };
+
+    //read variable measurements
     MatrixXd x = constructVariables ();
-    vector<double> result = parameterExtraction_Secant(a, a2, x, normalizedEKVmodel);
 
+    //perform parameter extraction
+    vector<double> result = parameterExtraction(a, x, EKVmodel);
 
+    //Get IDmodel from resulted parameters
+    int points = 1010;                      //total data points wanted
+    vector<double> IDmodel (points);
+
+    //get VGS and VDS from x
+    vector<double> VGS (points);
+    vector<double> VDS (points);
+    for (int i = 0; i < points; i++){
+        VGS[i] = (x.row(0))[i];
+        VDS[i] = (x.row(1))[i];
+    }
+    IDmodel = EKVmodel_getID (result, VGS, VDS);
+
+    //asymptotic validation on IDmodel
+    asymptoticCheck (result, VGS, VDS);
 
     return 0;
 }
-
-
-
-
-//    IOFormat HeavyFmt(FullPrecision, 0, ", ", ";\n", "[", "]", "[", "]");
-//    cout << x.format(HeavyFmt) <<endl;
-
-//vector<double> result = parameterExtraction_Secant(aPrevious, a, x);

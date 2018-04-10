@@ -571,4 +571,5 @@ norm of delta x converged after 44217 iterations
 parameter a[0] = 1.58029e-06 
 parameter a[1] = 0.571274 
 parameter a[2] = 0.2533 
-V = 4.20473e-05
+||V||2 = 4.20473e-05
+||delta x||2 = 0.000902937

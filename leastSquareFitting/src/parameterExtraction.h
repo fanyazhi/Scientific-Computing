@@ -18,8 +18,26 @@ using namespace Eigen;
 // ----------------------------------------------------------------------------------------
 
 /*
-   alias type name for a model function
+   Some constants are used throughout parameter extraction.
+   They are declared and explained here for convenience
 */
+const double p = 0.0001;          //the perturbation used in finite difference derivative approximation
+
+const double quadTol = 0.2;       //tolerance for quadratic convergence check
+
+const double threshold = 1E-7;   //Stop condition: threshold on delta x norm to confirm convergence
+
+const double maxIteration = 1E7;  //Stop condition: max number of iterations allowed to prevent infinite iterations
+
+const double acceptableV = 0.1;   /* Stop condition: when delta x threshold is difficult to find,
+                                    V has stopped decreasing, and ||V||2 has reached acceptableV, assume convergence occurred
+                                    Note that acceptable V is only a safe check
+                                    ||V||2 can can go beyond this value as long as it is still converging
+                                 */
+
+// ----------------------------------------------------------------------------------------
+
+//alias type name for a model function
 typedef double (*T)(vector<double>, VectorXd);
 
 // ----------------------------------------------------------------------------------------
