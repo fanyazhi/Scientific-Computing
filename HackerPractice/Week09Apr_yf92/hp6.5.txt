@@ -1,0 +1,5 @@
+2    epsilon: 0%  estimate error: 0 Feasible time step: 1
+6.1919     epsilon: 0.0435144%  estimate error: -0.0274768 Feasible time step: 0.0608531
+14.8259    epsilon: 0.11554%    estimate error: -0.0823941 Feasible time step: 0.0564554
+33.6235    epsilon: 0.158988%   estimate error: -0.200871 Feasible time step: 0.0551111
+75.2075    epsilon: 0.174543%   estimate error: -0.462298 Feasible time step: 0.0545897
