@@ -26,8 +26,6 @@ vector<double> RK34_adaptiveH (T f, double x0, double t0, double tn, double h);
 
 vector<double> slopeFunction (T f, double ti, double h, double xi);
 
-double RK34ErrorEstimator (vector<double> k, double h);
-
 double adaptiveH (double hi, double eR, double eA, double E, double x);
 
 #endif //ODESOLVER_RK34_H

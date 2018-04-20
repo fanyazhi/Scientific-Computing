@@ -14,8 +14,9 @@ int main() {
     result = RK34_adaptiveH(f, 2, 0, 4, 1);
     result = RK4(f, 2, 0, 4, 1);
 
+    cout<<"RK4"<<endl;
     for(int i = 0; i<result.size(); i++){
-        //cout<<result[i]<<endl;
+        cout<<result[i]<<endl;
     }
     return 0;
 }
