@@ -15,17 +15,16 @@
 #include <iostream>
 #include <cmath>
 #include "forwardEuler.h"
+#include <Eigen/Dense>
 
 using namespace std;
 
-vector<double> RK3 (T f, double x0, double t0, double tn, double h);
+MatrixXd RK3 (T f, VectorXd x0, double t0, double tn, double h);
 
-vector<double> RK4 (T f, double x0, double t0, double tn, double h);
+MatrixXd RK4 (T f, VectorXd x0, double t0, double tn, double h);
 
-vector<double> RK34_adaptiveH (T f, double x0, double t0, double tn, double h);
+MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0);
 
-vector<double> slopeFunction (T f, double ti, double h, double xi);
-
-double adaptiveH (double hi, double eR, double eA, double E, double x);
+MatrixXd slopeFunction (T f, double ti, double h, VectorXd xi);
 
 #endif //ODESOLVER_RK34_H

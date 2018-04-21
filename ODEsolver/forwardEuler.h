@@ -13,19 +13,22 @@
 
 #include <vector>
 #include <iostream>
+#include <Eigen/Dense>
 
 using namespace std;
+using namespace Eigen;
 
 // ----------------------------------------------------------------------------------------
 
 //alias type name for an ODE function
-typedef double (*T)(double, double);
+typedef VectorXd (*T)(double, VectorXd);
+
 
 // ----------------------------------------------------------------------------------------
 
 
 
-vector<double> forwardEuler (T f, double x0, double t0, double tn, double h);
+MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h);
 
 
 #endif //ODESOLVER_FORWARDEULER_H

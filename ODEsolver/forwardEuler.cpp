@@ -1,24 +1,33 @@
 /*
- *  forwardEuler.h
+ *  forwardEuler.cpp
  *  ODESolver
  *  This file contains forward Euler method with and without time adaptation
  *
- *  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 4/18/18.
- *  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+ *  Created by Yijia Chen (yc2366) and Yazhi Fan (yf92) on 4/18/18.
+ *  Copyright © 2018 Yijia and Yazhi. All rights reserved.
  *
  */
 
 #include "forwardEuler.h"
 
 using namespace std;
+using namespace Eigen;
 
-vector<double> forwardEuler (T f, double x0, double t0, double tn, double h){
-    vector<double> x ((int)( (tn-t0) / h) + 1);
-    x[0] = x0;
+MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h){
+    int stepNum = ((int)( (tn-t0) / h) + 1);
+    MatrixXd result (x0.size(), stepNum);
 
-    for (int i = 1; i < (int)( (tn-t0) / h) + 1; i++){
-        x[i] = x[i-1] + f(t0+((i-1)*h), x[i-1]);
+    // store the initial guess, vector x0
+    for (int i = 0; i< x0.size(); i++){
+        result(i, 0) = x0[i];
     }
-    return x;
+
+    //loop through t, generate x[]
+    for (int j = 1; j < stepNum; j++){
+        result.col(j) = result.col(j-1) + f(t0 + (j-1)*h, result.col(j-1))*h;
+    }
+
+
+    return result;
 }
 
