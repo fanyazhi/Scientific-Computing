@@ -1,7 +1,7 @@
 /*
  *  forwardEuler.cpp
  *  ODESolver
- *  This file contains forward Euler method with and without time adaptation
+ *  This file contains the forward Euler method
  *
  *  Created by Yijia Chen (yc2366) and Yazhi Fan (yf92) on 4/18/18.
  *  Copyright © 2018 Yijia and Yazhi. All rights reserved.
@@ -12,6 +12,8 @@
 
 using namespace std;
 using namespace Eigen;
+
+// ----------------------------------------------------------------------------------------
 
 MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h){
     int stepNum = ((int)( (tn-t0) / h) + 1);

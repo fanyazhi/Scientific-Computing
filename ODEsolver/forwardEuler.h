@@ -1,10 +1,10 @@
 /*
  *  forwardEuler.h
  *  ODESolver
- *  This this the header file for forward Euler method with and without time adaptation
+ *  This file contains declarations for the forward Euler method
  *
- *  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 4/18/18.
- *  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+ *  Created by Yijia Chen (yc2366) and Yazhi Fan (yf92) on 4/18/18.
+ *  Copyright © 2018 Yijia and Yazhi. All rights reserved.
  *
  */
 
@@ -23,11 +23,18 @@ using namespace Eigen;
 //alias type name for an ODE function
 typedef VectorXd (*T)(double, VectorXd);
 
-
 // ----------------------------------------------------------------------------------------
 
-
-
+/* forward Euler ODE solver
+        Parameters:
+                f: ODE function
+                x0: initial condition
+                t0: start time
+                tn: end time
+                h: step size
+        Return:
+                solution of ODE at all time steps
+*/
 MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h);
 
 

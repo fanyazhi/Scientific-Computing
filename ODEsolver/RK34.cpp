@@ -3,8 +3,8 @@
  *  ODESolver
  *  This file contains RK34 method with and without time adaptation
  *
- *  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 4/18/18.
- *  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+ *  Created by Yijia Chen (yc2366) and Yazhi Fan (yf92) on 4/18/18.
+ *  Copyright © 2018 Yijia and Yazhi. All rights reserved.
  *
  */
 
@@ -79,7 +79,7 @@ MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0) {
         double adaptH = h(i-1) * pow( (eR / E.norm()) / ( (xRK4.col(i)).norm()+eA ), 1.0/3.0 );
         h.conservativeResize(h.size()+1);
         h(i) = adaptH;
-    //    cout<<"h: "<<h[i]<<" "<<adaptH<<endl;
+        //cout<<"h: "<<h[i]<<" "<<adaptH<<endl;
 
 
         //calculate xi+1 with hi+1
