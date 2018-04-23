@@ -27,7 +27,7 @@ using namespace Eigen;
                 t: time
                 x: variable
         Return:
-                dV/dx
+                dx/dt
 */
 VectorXd testODE (double t, VectorXd x);
 

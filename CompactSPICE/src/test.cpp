@@ -15,6 +15,7 @@ using namespace Eigen;
 
 VectorXd testODE (double t, VectorXd x) {
     VectorXd result (x.size());
+    //return dx/dt of single ODE function
     result(0) = 4 * exp(0.8 * t) - 0.5 * x(0);
     return result;
 }
@@ -22,6 +23,7 @@ VectorXd testODE (double t, VectorXd x) {
 VectorXd testFunction (double t0, double tn, double h) {
     int stepNum = ((int)( (tn-t0) / h) + 1);
     VectorXd result (stepNum);
+    //return the ground truth x
     for (int i = 0; i<stepNum; i++){
         result(i) = (4/1.3)*(exp(0.8*(t0+h*i))-exp(-0.5*(t0+h*i)))+2*exp(-0.5*(t0+h*i));
     }
