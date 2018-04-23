@@ -19,15 +19,16 @@ VectorXd testODE (double t, VectorXd x) {
     return result;
 }
 
-VectorXd testFunction (VectorXd t) {
-    VectorXd result (t.size());
-    for (int i = 0; i<t.size(); i++){
-        result(i) = (4/1.3)*(exp(0.8*t(i))-exp(-0.5*t(i)))+2*exp(-0.5*t(i));
+VectorXd testFunction (double t0, double tn, double h) {
+    int stepNum = ((int)( (tn-t0) / h) + 1);
+    VectorXd result (stepNum);
+    for (int i = 0; i<stepNum; i++){
+        result(i) = (4/1.3)*(exp(0.8*(t0+h*i))-exp(-0.5*(t0+h*i)))+2*exp(-0.5*(t0+h*i));
     }
     return result;
 }
 
 double percentError (double a, double b) {
-    return (a-b)/a;
+    return abs((a-b)/a);
 }
 

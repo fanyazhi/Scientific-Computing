@@ -39,7 +39,7 @@ VectorXd testODE (double t, VectorXd x);
         Return:
                 ground truth x values
 */
-VectorXd testFunction (VectorXd t);
+VectorXd testFunction (double t0, double tn, double h);
 
 // ----------------------------------------------------------------------------------------
 

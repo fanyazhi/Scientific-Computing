@@ -56,12 +56,15 @@ MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0) {
     MatrixXd x (x0.size(), 1); x = x0;          //stores result of RK34 time adaptive
     MatrixXd xRK4 (x0.size(), 1); x = x0;        //stores RK4 x
     VectorXd h (1); h(0) = h0;                  //stores time steps
+    int stepNum = ((int)( (tn-t0) / h0) + 1);
+    MatrixXd result (x0.size(), stepNum); result.col(0) = x0; //stores result of RK34 at desired time steps
 
-    double eR = 1E-7;
-    double eA = 1E-9;
+    double eR = 1E-7;   //epsilon R used for Error calculation
+    double eA = 1E-9;   //epsilon A used for Error calculation
 
-    double totalTime = 0;
-    int i = 1;
+    double totalTime = 0;   //records total time
+    double point = 1;       //records number of points in result
+    int i = 1;              //records number of points in RK34 x
 
     while(totalTime < tn-t0){
 
@@ -81,26 +84,23 @@ MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0) {
         h(i) = adaptH;
         //cout<<"h: "<<h[i]<<" "<<adaptH<<endl;
 
-
         //calculate xi+1 with hi+1
         k = slopeFunction(f, t0+(totalTime), h(i), x.col(i-1));
         x.conservativeResize(NoChange, x.cols()+1);
         x.col(i) =  x.col(i-1) + ((1.0/24.0) * (7*k.col(0) + 6.0*k.col(1) + 8.0*k.col(2) + 3*k.col(3)) * h(i)) ;
 
         //increment time
-        i++;
         totalTime += adaptH;
-        //cout<<totalTime<<endl;
+        //add this point to result if it is at a desired time step
+        if (totalTime > h0*point && point <stepNum){
+            result.col(point) = x.col(i);
+            point++;
+        }
+
+        i++;
     }
 
-
-    for (int j = 0; j<x.cols(); j++){
-
-        cout<<x(0,j);
-
-        cout<<endl;
-    }
-    return x;
+    return result;
 }
 
 //return vector k1, k2, k3, k4

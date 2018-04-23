@@ -26,7 +26,7 @@ MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h){
 
     //loop through t, generate x[]
     for (int j = 1; j < stepNum; j++){
-        result.col(j) = result.col(j-1) + f(t0 + (j-1)*h, result.col(j-1))*h;
+        result.col(j) = result.col(j-1) + f(t0 + (j-1)*h, result.col(j-1)) * h;
     }
 
 
