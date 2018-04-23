@@ -29,6 +29,6 @@ VectorXd testFunction (double t0, double tn, double h) {
 }
 
 double percentError (double a, double b) {
-    return abs((a-b)/a);
+    return abs((a-b)/a) * 100;
 }
 

@@ -33,7 +33,6 @@ VectorXd RCcircuit(double t, VectorXd X) {
     f = M*X+B;
 
     return f;
-
 }
 
 VectorXd CSamplifier(double t, VectorXd x) {
@@ -57,7 +56,7 @@ VectorXd CSamplifier(double t, VectorXd x) {
 }
 
 double currentSource (double t) {
-    double T = 20; //s
+    double T = 20;      //s
     if (fmod(t*1E9, T) < 1) return 1E5 * fmod(t, T/1E9);
     else if (fmod(t*1E9, T) < 10) return 1E-4;
     else if (fmod(t*1E9, T) < 11) return (-1.0)*1E5*fmod(t, T/1E9) + 11E-4;

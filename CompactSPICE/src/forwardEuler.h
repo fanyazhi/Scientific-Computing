@@ -37,7 +37,6 @@ typedef VectorXd (*T)(double, VectorXd);
 */
 MatrixXd forwardEuler (T f, VectorXd x0, double t0, double tn, double h);
 
-
 #endif //ODESOLVER_FORWARDEULER_H
 
 

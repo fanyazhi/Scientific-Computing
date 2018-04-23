@@ -82,7 +82,6 @@ MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0) {
         double adaptH = h(i-1) * pow( (eR / E.norm()) / ( (xRK4.col(i)).norm()+eA ), 1.0/3.0 );
         h.conservativeResize(h.size()+1);
         h(i) = adaptH;
-        //cout<<"h: "<<h[i]<<" "<<adaptH<<endl;
 
         //calculate xi+1 with hi+1
         k = slopeFunction(f, t0+(totalTime), h(i), x.col(i-1));
@@ -103,8 +102,8 @@ MatrixXd RK34_adaptiveH (T f, VectorXd x0, double t0, double tn, double h0) {
     return result;
 }
 
-//return vector k1, k2, k3, k4
 MatrixXd slopeFunction (T f, double ti, double h, VectorXd xi) {
+    //return vector k1, k2, k3, k4
     MatrixXd k (xi.size(), 4);
     k.col(0) = f(ti, xi);
     k.col(1) = f(ti+h/2, xi+k.col(0)*h/2);
