@@ -43,23 +43,36 @@ vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
 }
 
 
-vector<double> cubicSpline(vector<double> x, vector<double> y, vector<double> qx) {
+void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<double> &qy) {
 
     //initialize qx and qy for extraction
-    vector<double> qy(qx.size());
+    qx[0] = x[0];
     qy[0] = y[0];
 
-    //obtain derivatives
-    vector<double> k(qx.size());
-    k = splineDerivative(x.size(), x, y);
-
-    for (int j = 1; j < qx.size(); j++) {
-        int i = 0;
-        while (x[i]<qx[j] && i<x.size()){
-            i++;
-        }
-        qy[j] = cubicPoint(i , qx[j], x, y, k);
+    //initialize variable t to breakdown a and y into monotonic functions
+    vector<double> t(x.size());
+    for (int i = 0; i<t.size(); i++){
+        t[i] = i;
+    }
+    vector<double> qt(qx.size()); qt[0] = 0;
+    for (int i = 1; i<qt.size(); i++){
+        qt[i] = qt[i - 1] + 1.0*(t.size()-1) / qx.size();
     }
 
-    return qy;
+    //obtain derivatives
+    vector<double> ky(qt.size());
+    vector<double> kx(qt.size());
+    ky = splineDerivative(t.size(), t, y);
+    kx = splineDerivative(t.size(), t, x);
+
+    for (int j = 1; j < qt.size(); j++) {
+        int i = 0;
+        while (t[i]<qt[j] && i<t.size()){
+            i++;
+        }
+        qy[j] = cubicPoint(i , qt[j], t, y, ky);
+        qx[j] = cubicPoint(i , qt[j], t, x, kx);
+    }
+
+
 }

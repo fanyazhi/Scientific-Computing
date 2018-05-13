@@ -190,9 +190,6 @@ vector<double> Jacobi(CRSmatrix A, vector<double> b) {
             x[i] = prod[i] + cep[i];
         }
 
-        //cout<<"x(k-1) "<<xTemp[0]<<" x(k) "<<x[0]<<" "<<x[1]<<" "<<x[2]<<" "<<x[3]<<" "<<x[4]<<" "<<endl;
-        //cout<<"DLU*x(k-1) "<<prod[0] << endl;
-
         //find new vetor norm ||x(k-1)-x||
         for (int i = 0; i < b.size(); i++) {
             normTemp[i] = -1.0*x[i];

@@ -13,6 +13,6 @@ using namespace std;
 
 double cubicPoint(int i, double xi, vector<double> x, vector<double> y, vector<double> k);
 vector<double> splineDerivative(int d, vector<double> x, vector<double> y);
-vector<double> cubicSpline(vector<double> x, vector<double> y, vector<double> qx);
+void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<double> &qy);
 
 #endif //SPLINEFITTING_CUBICSPLINE_H
