@@ -1,4 +1,4 @@
-#include "defs.h";
+#include "defs.h"
 /*Return one divided by zero
 */
 double integerDividedByZero() {

@@ -1,10 +1,10 @@
-#pragma once
 #include<iostream>
 #include<cmath>
 #include <limits>
 #include <cfloat>
 #include <fstream>
 #include <cstdio>
+#include <math.h>
 
 
 /*************************** Function Definitions ****************************/
