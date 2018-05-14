@@ -1,6 +1,6 @@
 # Assignment2: Modular Testing in Sparse Matrix Solvers ver2.0 <br />
 Author: Yazhi Fan(yf92) and Yijia Chen(yc2366) <br />
-Date: 03/15/2018 <br />
+Date: 05/13/2018 <br />
 Platform: Clion on mac OS <br />
 This is almost a complete renewal of the previous sparse matrix solver <br />
 Major changes: <br />
