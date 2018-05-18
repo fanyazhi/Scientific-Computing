@@ -23,6 +23,9 @@ double cubicPoint(int i, double xi, vector<double> x, vector<double> y, vector<d
 }
 
 vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
+
+    int derivative_s=clock();   //derivative calculation start time
+
     //solve a[][]k[] = b[] to find frst derivatives
     vector<double> k(d);
     CRSmatrix a (d, d);
@@ -47,6 +50,12 @@ vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
     b[d-1] = 3.0* (y[d-1] - y[d-2]) / pow((x[d-1]-x[d-2]),2);
 
     k = Jacobi(a, b);
+
+    int derivative_e=clock();
+
+    cout << "slope function calculation completed in "
+            << (derivative_e-derivative_s)/double(CLOCKS_PER_SEC)*1000 << "ms"<<endl;
+
     return k;
 }
 
@@ -80,6 +89,8 @@ void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<
         kx[kx.size()-1] = kx[0];
     }
 
+    int spline_s=clock();   //derivative calculation start time
+
     for (int j = 1; j < qt.size(); j++) {
         int i = 0;
         while (t[i]<qt[j] && i<t.size()){
@@ -89,9 +100,17 @@ void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<
         qx[j] = cubicPoint(i , qt[j], t, x, kx);
     }
 
+    int spline_e=clock();
+
+    cout << "spline interpolation completed in "
+         << (spline_e-spline_s)/double(CLOCKS_PER_SEC)*1000 << "ms"<<endl;
+
 }
 
 vector<double> constructVariables (string address) {
+
+    int file_s=clock();   //derivative calculation start time
+
     //initiate vector x to store all elements in file
     vector<double> x;
 
@@ -112,6 +131,11 @@ vector<double> constructVariables (string address) {
         double value = stod(line);
         x.push_back(value);
     }
+
+    int file_e=clock();
+
+    cout << "file read completed in "
+         << (file_e-file_s)/double(CLOCKS_PER_SEC)*1000 << "ms"<<endl;
 
     return x;
 }
