@@ -23,9 +23,6 @@ double cubicPoint(int i, double xi, vector<double> x, vector<double> y, vector<d
 }
 
 vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
-
-    int derivative_s=clock();   //derivative calculation start time
-
     //solve a[][]k[] = b[] to find frst derivatives
     vector<double> k(d);
     CRSmatrix a (d, d);
@@ -51,11 +48,6 @@ vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
 
     k = Jacobi(a, b);
 
-    int derivative_e=clock();
-
-    cout << "slope function calculation completed in "
-            << (derivative_e-derivative_s)/double(CLOCKS_PER_SEC)*1000 << "ms"<<endl;
-
     return k;
 }
 
@@ -74,11 +66,18 @@ void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<
         qt[i] = qt[i - 1] + 1.0*(t.size()-1) / qx.size();
     }
 
+    int derivative_s=clock();   //derivative calculation start time
+
     //obtain derivatives
     vector<double> ky(qt.size());
     vector<double> kx(qt.size());
     ky = splineDerivative(t.size(), t, y);
     kx = splineDerivative(t.size(), t, x);
+
+    int derivative_e=clock();
+
+    cout << "slope function calculation completed in "
+         << (derivative_e-derivative_s)/double(CLOCKS_PER_SEC)*1000 << "ms"<<endl;
 
     //if the first point and the last points are exactly the same, then the
     //curve is enclosed, and derivatives should match at the enclosure point

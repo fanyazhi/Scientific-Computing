@@ -1,3 +1,14 @@
+/*
+ *  main.cpp
+ *  SplineFitting
+ *  This file contains an example usage of the spline fitting method
+ *  Please change the file path for own use
+ *
+ *  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 5/10/18.
+ *  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+ *
+ */
+
 #include <iostream>
 #include <vector>
 #include "cubicSpline.h"
@@ -13,8 +24,8 @@ int main() {
     //initialize known x and y points
     vector<double> x;
     vector<double> y;
-    x = constructVariables("/Users/Jane_Fan/Desktop/x_enclosed.csv");
-    y = constructVariables("/Users/Jane_Fan/Desktop/y_enclosed.csv");
+    x = constructVariables("/Users/Jane_Fan/Desktop/xcircle.csv");
+    y = constructVariables("/Users/Jane_Fan/Desktop/ycircle.csv");
 
     //initialize qx and qy for extraction
     int points = 10000;
@@ -26,16 +37,6 @@ int main() {
 
     //test for continuous second derivative
     secondDerivativeTest(qx, qy);
-
-
-//    for (int i = 0; i<qx.size(); i++){
-//        cout<<qx[i]<<endl;
-//    }
-//    cout<<"__________"<<endl;
-//    for (int i = 0; i<qy.size(); i++){
-//        cout<<qy[i]<<endl;
-//    }
-
 
     return 0;
 }
