@@ -1,12 +1,18 @@
-//
-// Created by Jane Fan on 5/13/18.
-//
+/*
+ *  CRSmatrix.cpp
+ *  SplineFitting
+ *  This file contains CRS matrix functions and Jacobi method
+ *
+ *  Created by Yijia Chen (yc2366) and Yazhi Fan (yf92) on 4/18/18.
+ *  Copyright © 2018 Yijia and Yazhi. All rights reserved.
+ *
+ */
 
 #include "CRSmatrix.h"
-#include "cubicSpline.h"
 
 using namespace std;
 
+// ----------------------------------------------------------------------------------------
 
 CRSmatrix::CRSmatrix(vector<double> v, vector<int> r, vector<int> c)
 {
@@ -29,6 +35,55 @@ CRSmatrix::CRSmatrix(int r, int c)
 {
     rowNum = r;
     colNum = c;
+}
+
+CRSmatrix::CRSmatrix(string valueAddress, string rowPtrAddress, string colIndAddress) {
+    //Read in files
+    ifstream rowFile, valueFile, colFile;
+
+    rowFile.open(rowPtrAddress);
+    valueFile.open(valueAddress);
+    colFile.open(colIndAddress);
+
+    // Check if the file is open
+    if (!rowFile || !valueFile || !colFile) {
+        cout << "Unable to open file" << endl;
+        exit(1);
+    }
+
+    // Declare a variable to load the contents from the file
+    string line = "";
+
+    // Loading the value vector
+    string myValue;
+    while(valueFile.good()){
+        getline(valueFile,myValue,'\n');
+        //convert string value to double value
+        double myDoubleValue = atof(myValue.c_str());
+        value.push_back(myDoubleValue);
+    }
+
+    // Loading the row pointer vector
+    while (rowFile >> line) {
+        int rowNum = stoi(line);
+        rowPtr.push_back(rowNum-1);
+    }
+
+    // Loading the column indice vector
+    while (colFile >> line) {
+        int colIndex = stoi(line);
+        colInd.push_back(colIndex-1);
+    }
+
+    //find total number of rows
+    rowNum = rowPtr.size()-1;
+
+    //find total number of columns
+    colNum = 0;
+    for (int i = 0; i < colInd.size(); i++) {
+        if (colInd[i]>colNum) colNum = colInd[i];
+    }
+    colNum++;
 }
 
 double CRSmatrix::retrieveElement (int i, int j) {
@@ -97,7 +152,6 @@ double vectorNorm(vector<double> x) {
     return sqrt(sum);
 }
 
-//solve Ax = b
 vector<double> Jacobi(CRSmatrix A, vector<double> b) {
     //first find the inverse of the diagonal matrix
     CRSmatrix Di = A;
@@ -138,7 +192,6 @@ vector<double> Jacobi(CRSmatrix A, vector<double> b) {
         }
     }
 
-
     //take D^-1 * (L+U), store in DLU
     CRSmatrix DLU = LU;
     for (int i = 0; i<DLU.rowNum; i++){
@@ -150,10 +203,6 @@ vector<double> Jacobi(CRSmatrix A, vector<double> b) {
             }
         }
     }
-    //Di.printA();
-    //LU.printA();
-    //DLU.printA();
-
 
     //find intercept D^-1 * b
     vector<double> cep(b.size());
@@ -195,11 +244,11 @@ vector<double> Jacobi(CRSmatrix A, vector<double> b) {
             normTemp[i] = -1.0*x[i];
             normTemp[i] = xTemp[i] + normTemp[i];
         }
-
-        //cout<<"iteration #"<< count<<": "<<vectorNorm(normTemp)<<" "<<prod[1]<<endl;
     }
     return x;
 }
+
+
 
 
 
