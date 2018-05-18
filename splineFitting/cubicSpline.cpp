@@ -1,11 +1,19 @@
-//
-// Created by Jane Fan on 5/9/18.
-//
+/*
+ *  cubicSpline.cpp
+ *  SplineFitting
+ *  This file contains cubic spline functions
+ *
+ *  Created by Yazhi Fan (yf92) and Yijia Chen (yc2366) on 5/10/18.
+ *  Copyright © 2018 Yazhi and Yijia. All rights reserved.
+ *
+ */
 
 #include "cubicSpline.h"
 #include "CRSmatrix.h"
 
 using namespace std;
+
+// ----------------------------------------------------------------------------------------
 
 double cubicPoint(int i, double xi, vector<double> x, vector<double> y, vector<double> k) {
     double t = (xi-x[i-1]) / (x[i]-x[i-1]);
@@ -42,9 +50,7 @@ vector<double> splineDerivative(int d, vector<double> x, vector<double> y) {
     return k;
 }
 
-
 void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<double> &qy) {
-
     //initialize qx and qy for extraction
     qx[0] = x[0];
     qy[0] = y[0];
@@ -65,6 +71,15 @@ void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<
     ky = splineDerivative(t.size(), t, y);
     kx = splineDerivative(t.size(), t, x);
 
+    //if the first point and the last points are exactly the same, then the
+    //curve is enclosed, and derivatives should match at the enclosure point
+    double epislon = 1E-7;
+    if ( (abs(x[0] - x[x.size()-1]) <epislon)
+         && (abs(y[0] - y[y.size()-1]) <epislon) ) {
+        ky[ky.size()-1] = ky[0];
+        kx[kx.size()-1] = kx[0];
+    }
+
     for (int j = 1; j < qt.size(); j++) {
         int i = 0;
         while (t[i]<qt[j] && i<t.size()){
@@ -74,5 +89,29 @@ void cubicSpline(vector<double> x, vector<double> y, vector<double> &qx, vector<
         qx[j] = cubicPoint(i , qt[j], t, x, kx);
     }
 
+}
 
+vector<double> constructVariables (string address) {
+    //initiate vector x to store all elements in file
+    vector<double> x;
+
+    ifstream inValue;
+    inValue.open(address);
+
+    //check if file is open, if not exit code
+    if(!inValue.is_open()) {
+        cout << "error: file did not open" << endl;
+        exit(1);
+    }
+
+    // Declare a variable to load the contents from the file
+    string line = "";
+
+    // Loading the value vector
+    while (inValue >> line) {
+        double value = stod(line);
+        x.push_back(value);
+    }
+
+    return x;
 }

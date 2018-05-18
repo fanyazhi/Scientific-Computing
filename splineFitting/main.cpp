@@ -6,12 +6,12 @@
 using namespace std;
 
 int main() {
+
     //initialize known x and y points
-    int d = 5;
-    vector<double> x(d);
-    vector<double> y(d);
-    x = {3, 1, 2.5, 3, 3.5, 5, 3};
-    y = {1, 4, 4.5, 3, 4.5, 4, 1};
+    vector<double> x;
+    vector<double> y;
+    x = constructVariables("/Users/Jane_Fan/Desktop/xcircle.csv");
+    y = constructVariables("/Users/Jane_Fan/Desktop/ycircle.csv");
 
     //initialize qx and qy for extraction
     int points = 500;
@@ -21,12 +21,13 @@ int main() {
     //call cubic spline
     cubicSpline(x, y, qx, qy);
 
-    for (int i = 0; i<qy.size(); i++){
+    for (int i = 0; i<qx.size(); i++){
         cout<<qx[i]<<endl;
     }
     cout<<"__________"<<endl;
     for (int i = 0; i<qy.size(); i++){
         cout<<qy[i]<<endl;
     }
+
     return 0;
 }
